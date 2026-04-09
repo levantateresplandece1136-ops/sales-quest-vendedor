@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Quest — El Camino del Vendedor</title>
+    <style>
+        :root {
+            --bg-dark: #08111F;
+            --bg-navy: #0D1E3A;
+            --gold: #C9A84C;
+            --gold-light: #E5C76B;
+            --text-main: #FFFFFF;
+            --text-sec: #8BA3C4;
+            --red: #EF4444;
+            --red-dark: #7F1D1D;
+            --green: #10B981;
+            --green-dark: #064E3B;
+            --blue: #3B82F6;
+            --purple: #8B5CF6;
+            --orange: #F59E0B;
+            --pink: #EC4899;
+            --row1: #1A3A6B;
+            --row2: #1A4A2E;
+            --row3: #4A3A0A;
+            --row4: #431407;
+            --row5: #450A0A;
+            --row6: #2E1065;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: Georgia, serif;
+        }
+
+        /* Setup Screen */
+        #setup-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: radial-gradient(circle at center, var(--bg-navy) 0%, var(--bg-dark) 100%);
+            text-align: center;
+        }
+
+        .title-container {
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 4rem;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .sub-title {
+            font-size: 1.5rem;
+            color: var(--text-sec);
+            font-style: italic;
+        }
+
+        .setup-card {
+            background: rgba(13, 30, 58, 0.8);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .player-count-selector {
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-count {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-count.active {
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+
+        .players-config {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .player-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+        }
+
+        .player-item input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--gold);
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .avatar-option {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .avatar-option.selected {
+            border-color: var(--gold);
+            background: rgba(201, 168, 76, 0.2);
+        }
+
+        .upload-btn {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 5px;
+        }
+
+        .custom-avatar-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+            display: none;
+            margin: 0 auto 10px;
+        }
+
+        .start-btn {
+            background: var(--gold);
+            color: var(--bg-dark);
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(201, 168, 76, 0.4);
+        }
+
+        .start-btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Game Screen */
+        #game-screen {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .board-container {
+            display: grid;
+            grid-template-rows: repeat(6, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .board-row {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+        }
+
+        .square {
+            position: relative;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s;
+        }
+
+        .square-num {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+
+        .square-emoji {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .square-label {
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+
+        .row-label {
+            position: absolute;
+            left: -120px;
+            width: 110px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            text-transform: uppercase;
+        }
+
+        /* Special Squares */
+        .square.cancel { background: var(--red-dark) !important; border: 2px solid var(--red) !important; }
+        .square.referral { background: var(--green-dark) !important; border: 2px solid var(--green) !important; }
+        .square.goal { background: #3B0764 !important; border: 4px solid var(--gold) !important; }
+
+        /* Center Panel */
+        .center-panel {
+            background: #08111F;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-info h2 {
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .game-info p {
+            color: var(--text-sec);
+            font-size: 0.9rem;
+        }
+
+        .turn-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-player-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .current-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            object-fit: cover;
+        }
+
+        .current-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .dice-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dice-btn {
+            width: 80px;
+            height: 80px;
+            background: var(--gold);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(201, 168, 76, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(201, 168, 76, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(201, 168, 76, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(201, 168, 76, 0.4); }
+        }
+
+        .dice-result {
+            margin-top: 10px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gold);
+            height: 40px;
+        }
+
+        /* Player Tokens */
+        .token {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            position: absolute;
+            z-index: 10;
+            transition: all 0.4s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .token-num {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            color: black;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid black;
+        }
+
+        /* Modal */
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-navy);
+            border: 3px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+        }
+
+        .modal-category-emoji {
+            font-size: 120px;
+            margin: 20px 0;
+        }
+
+        .modal-category-name {
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .modal-desc {
+            font-size: 1.2rem;
+            color: var(--text-sec);
+            margin-bottom: 30px;
+        }
+
+        /* Timer */
+        .timer-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.1);
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: var(--blue);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .timer-urgent {
+            stroke: var(--red);
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .modal-btn:hover { transform: scale(1.05); }
+        .btn-correct { background: var(--green); color: white; }
+        .btn-incorrect { background: var(--red); color: white; }
+        .btn-skip { background: #444; color: white; }
+        .btn-ok { background: var(--gold); color: var(--bg-dark); padding: 15px 40px; font-size: 1.2rem; }
+
+        /* Victory Screen */
+        #victory-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #victory-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .victory-content {
+            position: relative;
+            z-index: 210;
+        }
+
+        .victory-title {
+            font-size: 5rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
+        }
+
+        .winner-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 8px solid var(--gold);
+            margin-bottom: 30px;
+            box-shadow: 0 0 50px var(--gold);
+        }
+
+        /* Turn Indicator Bar */
+        .turn-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50px;
+        }
+
+        .turn-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            opacity: 0.5;
+            transition: all 0.3s;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .turn-indicator.active {
+            opacity: 1;
+            border-color: var(--gold);
+            transform: scale(1.2);
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        /* Fixed Restart Button */
+        .fixed-restart-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+            border: 1px solid var(--red);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 50;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .fixed-restart-btn:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .row-label { display: none; }
+            .square { font-size: 0.6rem; }
+            .square-emoji { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Setup Screen -->
+    <div id="setup-screen">
+        <div class="title-container">
+            <h1 class="main-title">SALES QUEST</h1>
+            <p class="sub-title">El Camino del Vendedor</p>
+        </div>
+
+        <div class="setup-card">
+            <div class="player-count-selector">
+                <h3>¿Cuántos jugadores?</h3>
+                <div class="btn-group" id="count-btns">
+                    <button class="btn-count active" data-count="1">1</button>
+                    <button class="btn-count" data-count="2">2</button>
+                    <button class="btn-count" data-count="3">3</button>
+                    <button class="btn-count" data-count="4">4</button>
+                    <button class="btn-count" data-count="5">5</button>
+                    <button class="btn-count" data-count="6">6</button>
+                    <button class="btn-count" data-count="7">7</button>
+                    <button class="btn-count" data-count="8">8</button>
+                    <button class="btn-count" data-count="9">9</button>
+                    <button class="btn-count" data-count="10">10</button>
+                </div>
+            </div>
+
+            <div class="players-config" id="players-config">
+                <!-- Player config items will be injected here -->
+            </div>
+
+            <button id="start-game-btn" class="start-btn" disabled>¡INICIAR JUEGO!</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen">
+        <button id="fixed-restart-btn" class="fixed-restart-btn">
+            <span>🔄</span> REINICIAR
+        </button>
+
+        <div class="board-container" id="board">
+            <!-- Squares will be injected here -->
+        </div>
+
+        <div class="center-panel">
+            <div class="game-info">
+                <h2 class="serif">SALES QUEST</h2>
+                <p>El Camino del Vendedor</p>
+                <div id="turn-bar" class="turn-bar"></div>
+            </div>
+
+            <div class="turn-panel">
+                <div class="current-player-display">
+                    <img id="current-player-avatar" class="current-avatar" src="" alt="">
+                    <span id="current-player-name" class="current-name">Jugador 1</span>
+                </div>
+            </div>
+
+            <div class="dice-container">
+                <button id="roll-dice-btn" class="dice-btn">🎲</button>
+                <div id="dice-result" class="dice-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-player">
+                <img id="modal-player-avatar" class="modal-avatar" src="" alt="">
+                <h3 id="modal-player-name">Nombre</h3>
+            </div>
+            <div id="modal-square-info" style="color: var(--text-sec); font-size: 0.9rem;">Casilla 1 — LLAMADA FRÍA</div>
+            <div id="modal-emoji" class="modal-category-emoji">❓</div>
+            <div id="modal-category-name" class="modal-category-name">PREGUNTA</div>
+            <p id="modal-desc" class="modal-desc">Responde la pregunta correctamente</p>
+
+            <!-- Basta Roulette Section -->
+            <div id="basta-section" style="display: none; margin-bottom: 20px;">
+                <div id="basta-letter" style="font-size: 5rem; font-weight: bold; color: var(--gold); margin-bottom: 15px;">A</div>
+                <div class="modal-actions">
+                    <button id="btn-basta-start" class="modal-btn btn-ok" style="background: var(--purple); color: white; width: 100%;">🎲 INICIAR CONTEO</button>
+                    <button id="btn-basta-stop" class="modal-btn btn-incorrect" style="display: none; width: 100%;">🛑 ¡BASTA!</button>
+                </div>
+            </div>
+
+            <div id="modal-timer-container" class="timer-container">
+                <svg class="timer-svg" width="120" height="120">
+                    <circle class="timer-circle-bg" cx="60" cy="60" r="54"></circle>
+                    <circle id="timer-progress" class="timer-circle-progress" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="0"></circle>
+                </svg>
+                <div id="timer-text" class="timer-text">15</div>
+            </div>
+
+            <div id="modal-start-container" class="modal-actions">
+                <button id="btn-start-challenge" class="modal-btn btn-ok" style="background: var(--blue); color: white; width: 100%;">🚀 INICIAR RETO</button>
+            </div>
+
+            <div id="modal-actions" class="modal-actions" style="display: none;">
+                <button id="btn-correct" class="modal-btn btn-correct">✅ CORRECTO</button>
+                <button id="btn-incorrect" class="modal-btn btn-incorrect">❌ INCORRECTO</button>
+                <button id="btn-skip" class="modal-btn btn-skip">⏩ SALTAR</button>
+            </div>
+            <div id="modal-special-actions" class="modal-actions" style="display: none;">
+                <button id="btn-ok" class="modal-btn btn-ok">ACEPTAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Screen -->
+    <div id="victory-screen">
+        <canvas id="victory-canvas"></canvas>
+        <div class="victory-content">
+            <h1 id="winner-text" class="victory-title">¡JUGADOR GANA!</h1>
+            <img id="winner-avatar" class="winner-avatar" src="" alt="">
+            <br>
+            <button id="restart-btn" class="start-btn">🔄 NUEVA PARTIDA</button>
+        </div>
+    </div>
+
+    <!-- Confirm Restart Modal -->
+    <div id="confirm-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 class="serif" style="color: var(--red); margin-bottom: 15px;">¿Reiniciar Partida?</h2>
+            <p style="margin-bottom: 25px; color: var(--text-sec);">Se perderá todo el progreso actual y volverás a la pantalla de inicio.</p>
+            <div class="modal-actions">
+                <button id="btn-confirm-restart" class="modal-btn btn-incorrect">SÍ, REINICIAR</button>
+                <button id="btn-cancel-restart" class="modal-btn btn-skip">CANCELAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTS & CONFIG ---
+        const AVATARS = ["🧑💼", "👩💼", "🧑🚀", "👩🚀", "🦁", "🐯", "🦊", "🐺", "🤖", "👾", "🎩", "🦅"];
+        const PLAYER_COLORS = ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16", "#F97316", "#6366F1"];
+        
+        const CATEGORIES = {
+            '🎭': { name: 'ROLEPLAY', desc: 'Actúa el escenario de ventas' },
+            '❓': { name: 'PREGUNTA', desc: 'Responde la pregunta correctamente' },
+            '⚡': { name: 'DAME 3 EN 5 SEG', desc: '¡Di 3 ejemplos en solo 5 segundos!', time: 5 },
+            '🔑': { name: 'PASSWORD', desc: 'Haz que adivinen la palabra sin decirla' },
+            '✅': { name: 'VERDADERO/FALSO', desc: '¿Es verdad o mentira?' },
+            '🎬': { name: 'MÍMICA', desc: 'Representa con gestos, sin hablar' },
+            '🅱️': { name: 'BASTA', desc: '¡Llena las categorías antes que los demás!' },
+            '🔴': { name: 'CANCELACIÓN', desc: '¡Retrocedes 2 casillas!', special: true },
+            '🟢': { name: 'REFERIDO', desc: '¡Avanzas 2 casillas!', special: true },
+            '🏆': { name: 'META', desc: '¡Has llegado al final!', special: true }
+        };
+
+        const SECTIONS = [
+            { name: "LLAMADA FRÍA", color: "#1A3A6B" },
+            { name: "PROSPECCIÓN", color: "#1A4A2E" },
+            { name: "DETECCIÓN DE NECESIDADES", color: "#4A3A0A" },
+            { name: "PRESENTACIÓN DE VALOR", color: "#431407" },
+            { name: "MANEJO DE OBJECIONES", color: "#450A0A" },
+            { name: "CIERRE Y SEGUIMIENTO", color: "#2E1065" }
+        ];
+
+        const SQUARE_MAP = [
+            '🎭','❓','⚡','🔑','✅','🎬','🔴','🅱️','🎭','⚡',
+            '🔑','✅','🟢','❓','🎭','⚡','🅱️','❓','✅','🔴',
+            '⚡','🎭','🔑','🅱️','❓','🟢','✅','🎭','⚡','🎬',
+            '🅱️','🎬','❓','🔴','🎭','🔑','⚡','🎬','❓','🟢',
+            '🎭','⚡','🅱️','❓','🎬','✅','🔴','🎭','🔑','⚡',
+            '✅','🎬','🟢','🎭','⚡','🅱️','🔑','✅','❓','🏆'
+        ];
+
+        // --- STATE ---
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isMoving = false;
+        let timerInterval = null;
+
+        // --- WEB AUDIO API ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            switch(type) {
+                case 'roll':
+                    // White noise roll
+                    const bufferSize = audioCtx.sampleRate * 1.5;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1000, now);
+                    filter.frequency.exponentialRampToValueAtTime(100, now + 1.5);
+                    noise.connect(filter);
+                    const noiseGain = audioCtx.createGain();
+                    noiseGain.gain.setValueAtTime(0.2, now);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+                    filter.connect(noiseGain);
+                    noiseGain.connect(audioCtx.destination);
+                    noise.start();
+                    break;
+
+                case 'move':
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(440, now + 0.1);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start();
+                    osc.stop(now + 0.1);
+                    break;
+
+                case 'success':
+                    [261.63, 329.63, 392.00].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g); g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, now + i * 0.1);
+                        g.gain.setValueAtTime(0.1, now + i * 0.1);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+                        o.start(now + i * 0.1);
+                        o.stop(now + i * 0.1 + 0.3);
+                    });
+                    break;
+
+                case 'error':
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(100, now + 0.4);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                    osc.start();
+                    osc.stop(now + 0.4);
+                    break;
+
+                case 'tick':
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(800, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start();
+                    osc.stop(now + 0.05);
+                    break;
+
+                case 'buzzer':
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    const mod = audioCtx.createOscillator();
+                    mod.frequency.value = 10;
+                    const modGain = audioCtx.createGain();
+                    modGain.gain.value = 20;
+                    mod.connect(modGain);
+                    modGain.connect(osc.frequency);
+                    mod.start();
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.8);
+                    osc.start();
+                    osc.stop(now + 0.8);
+                    break;
+
+                case 'victory':
+                    [261.63, 329.63, 392.00, 523.25].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g); g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, now + i * 0.2);
+                        g.gain.setValueAtTime(0.1, now + i * 0.2);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.2 + 0.5);
+                        o.start(now + i * 0.2);
+                        o.stop(now + i * 0.2 + 0.5);
+                    });
+                    break;
+                
+                case 'referral':
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g); g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, now + i * 0.05);
+                        g.gain.setValueAtTime(0.1, now + i * 0.05);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.05 + 0.2);
+                        o.start(now + i * 0.05);
+                        o.stop(now + i * 0.05 + 0.2);
+                    });
+                    break;
+                
+                case 'cancel':
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.linearRampToValueAtTime(220, now + 0.5);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.5);
+                    osc.start();
+                    osc.stop(now + 0.5);
+                    break;
+            }
+        }
+
+        // --- SETUP LOGIC ---
+        const countBtns = document.querySelectorAll('.btn-count');
+        const playersConfig = document.getElementById('players-config');
+        const startGameBtn = document.getElementById('start-game-btn');
+
+        countBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                countBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderPlayerConfigs(parseInt(btn.dataset.count));
+            });
+        });
+
+        function renderPlayerConfigs(count) {
+            playersConfig.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const item = document.createElement('div');
+                item.className = 'player-item';
+                item.innerHTML = `
+                    <h3>Jugador ${i + 1}</h3>
+                    <input type="text" placeholder="Nombre del jugador" class="player-name-input" data-index="${i}">
+                    <div class="avatar-grid">
+                        ${AVATARS.map(a => `<span class="avatar-option" data-player="${i}">${a}</span>`).join('')}
+                    </div>
+                    <img id="preview-${i}" class="custom-avatar-preview">
+                    <label class="upload-btn">
+                        Subir foto
+                        <input type="file" accept="image/*" class="player-file-input" data-index="${i}" style="display:none">
+                    </label>
+                `;
+                playersConfig.appendChild(item);
+            }
+            attachConfigListeners();
+            validateSetup();
+        }
+
+        function attachConfigListeners() {
+            document.querySelectorAll('.player-name-input').forEach(input => {
+                input.addEventListener('input', validateSetup);
+            });
+
+            document.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const pIndex = opt.dataset.player;
+                    document.querySelectorAll(`.avatar-option[data-player="${pIndex}"]`).forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    document.getElementById(`preview-${pIndex}`).style.display = 'none';
+                    validateSetup();
+                });
+            });
+
+            document.querySelectorAll('.player-file-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const pIndex = input.dataset.index;
+                    const file = e.target.files[0];
+                    if (file) {
+                        const url = URL.createObjectURL(file);
+                        const preview = document.getElementById(`preview-${pIndex}`);
+                        preview.src = url;
+                        preview.style.display = 'block';
+                        document.querySelectorAll(`.avatar-option[data-player="${pIndex}"]`).forEach(o => o.classList.remove('selected'));
+                        validateSetup();
+                    }
+                });
+            });
+        }
+
+        function validateSetup() {
+            const count = parseInt(document.querySelector('.btn-count.active').dataset.count);
+            let valid = true;
+            for (let i = 0; i < count; i++) {
+                const name = document.querySelector(`.player-name-input[data-index="${i}"]`).value;
+                const avatarSelected = document.querySelector(`.avatar-option[data-player="${i}"].selected`);
+                const fileUploaded = document.getElementById(`preview-${i}`).style.display === 'block';
+                if (!name || (!avatarSelected && !fileUploaded)) {
+                    valid = false;
+                    break;
+                }
+            }
+            startGameBtn.disabled = !valid;
+        }
+
+        startGameBtn.addEventListener('click', () => {
+            const count = parseInt(document.querySelector('.btn-count.active').dataset.count);
+            players = [];
+            for (let i = 0; i < count; i++) {
+                const name = document.querySelector(`.player-name-input[data-index="${i}"]`).value;
+                const avatarSelected = document.querySelector(`.avatar-option[data-player="${i}"].selected`);
+                const avatar = avatarSelected ? avatarSelected.innerText : document.getElementById(`preview-${i}`).src;
+                players.push({
+                    id: i,
+                    name: name,
+                    avatar: avatar,
+                    isImage: !avatarSelected,
+                    pos: 1,
+                    color: PLAYER_COLORS[i]
+                });
+            }
+            initGame();
+        });
+
+        // --- GAME LOGIC ---
+        function initGame() {
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            renderBoard();
+            renderTokens();
+            updateTurnDisplay();
+            saveState();
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            for (let r = 0; r < 6; r++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'board-row';
+                
+                const label = document.createElement('div');
+                label.className = 'row-label';
+                label.innerText = SECTIONS[r].name;
+                rowDiv.appendChild(label);
+
+                for (let c = 0; c < 10; c++) {
+                    // Zigzag logic
+                    let squareIdx;
+                    if (r % 2 === 0) {
+                        squareIdx = r * 10 + c;
+                    } else {
+                        squareIdx = r * 10 + (9 - c);
+                    }
+                    
+                    const squareNum = squareIdx + 1;
+                    const emoji = SQUARE_MAP[squareIdx];
+                    const cat = CATEGORIES[emoji];
+                    
+                    const sq = document.createElement('div');
+                    sq.className = 'square';
+                    sq.id = `square-${squareNum}`;
+                    sq.style.backgroundColor = SECTIONS[r].color;
+                    
+                    if (emoji === '🔴') sq.classList.add('cancel');
+                    if (emoji === '🟢') sq.classList.add('referral');
+                    if (emoji === '🏆') sq.classList.add('goal');
+
+                    sq.innerHTML = `
+                        <span class="square-num">${squareNum}</span>
+                        <span class="square-emoji">${emoji}</span>
+                        <span class="square-label">${cat.name.split(' ')[0]}</span>
+                    `;
+                    rowDiv.appendChild(sq);
+                }
+                board.appendChild(rowDiv);
+            }
+        }
+
+        function renderTokens() {
+            // Remove existing tokens
+            document.querySelectorAll('.token').forEach(t => t.remove());
+            
+            // Group players by position to offset them
+            const posGroups = {};
+            players.forEach(p => {
+                if (!posGroups[p.pos]) posGroups[p.pos] = [];
+                posGroups[p.pos].push(p);
+            });
+
+            players.forEach(p => {
+                const token = document.createElement('div');
+                token.className = 'token';
+                token.id = `token-${p.id}`;
+                token.style.borderColor = p.color;
+                
+                if (p.isImage) {
+                    token.style.backgroundImage = `url(${p.avatar})`;
+                } else {
+                    token.innerText = p.avatar;
+                    token.style.fontSize = '1.5rem';
+                    token.style.backgroundColor = p.color;
+                }
+
+                const num = document.createElement('div');
+                num.className = 'token-num';
+                num.innerText = p.id + 1;
+                num.style.backgroundColor = p.color;
+                num.style.color = 'white';
+                token.appendChild(num);
+
+                document.body.appendChild(token);
+                moveTokenToSquare(p.id, p.pos);
+            });
+        }
+
+        function moveTokenToSquare(playerId, squareNum) {
+            const player = players[playerId];
+            const square = document.getElementById(`square-${squareNum}`);
+            const rect = square.getBoundingClientRect();
+            
+            // Find offset if multiple players are on the same square
+            const playersOnSameSquare = players.filter(p => p.pos === squareNum);
+            const pIdx = playersOnSameSquare.findIndex(p => p.id === playerId);
+            const offset = pIdx * 5;
+
+            const token = document.getElementById(`token-${playerId}`);
+            token.style.left = `${rect.left + rect.width/2 - 20 + offset}px`;
+            token.style.top = `${rect.top + rect.height/2 - 20 + offset}px`;
+        }
+
+        function updateTurnDisplay() {
+            const p = players[currentPlayerIndex];
+            document.getElementById('current-player-name').innerText = p.name;
+            const avatarImg = document.getElementById('current-player-avatar');
+            if (p.isImage) {
+                avatarImg.src = p.avatar;
+            } else {
+                // Create a canvas/blob for emoji if needed, or just use a placeholder
+                avatarImg.src = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${p.avatar}</text></svg>`;
+            }
+            avatarImg.style.borderColor = p.color;
+
+            // Turn bar
+            const bar = document.getElementById('turn-bar');
+            bar.innerHTML = '';
+            players.forEach((player, i) => {
+                const ind = document.createElement('div');
+                ind.className = `turn-indicator ${i === currentPlayerIndex ? 'active' : ''}`;
+                if (player.isImage) {
+                    ind.style.backgroundImage = `url(${player.avatar})`;
+                } else {
+                    ind.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:1.2rem;background:${player.color};border-radius:50%">${player.avatar}</div>`;
+                }
+                bar.appendChild(ind);
+            });
+        }
+
+        // --- DICE MECHANICS ---
+        const rollBtn = document.getElementById('roll-dice-btn');
+        const diceResult = document.getElementById('dice-result');
+
+        rollBtn.addEventListener('click', async () => {
+            if (isMoving) return;
+            isMoving = true;
+            rollBtn.disabled = true;
+            diceResult.innerText = '';
+            
+            playSound('roll');
+            
+            // Dice animation
+            let roll;
+            for (let i = 0; i < 15; i++) {
+                roll = Math.floor(Math.random() * 6) + 1;
+                diceResult.innerText = roll;
+                await new Promise(r => setTimeout(r, 100));
+            }
+            
+            const finalRoll = Math.floor(Math.random() * 6) + 1;
+            diceResult.innerText = finalRoll;
+            
+            await movePlayer(currentPlayerIndex, finalRoll);
+        });
+
+        async function movePlayer(pIdx, steps) {
+            const p = players[pIdx];
+            let targetPos = p.pos + steps;
+            if (targetPos > 60) targetPos = 60;
+
+            // Move step by step
+            while (p.pos < targetPos) {
+                p.pos++;
+                playSound('move');
+                moveTokenToSquare(pIdx, p.pos);
+                await new Promise(r => setTimeout(r, 400));
+            }
+
+            // Check special squares
+            const emoji = SQUARE_MAP[p.pos - 1];
+            if (emoji === '🔴') {
+                setTimeout(() => openModal(p, p.pos, emoji), 500);
+            } else if (emoji === '🟢') {
+                setTimeout(() => openModal(p, p.pos, emoji), 500);
+            } else if (emoji === '🏆') {
+                showVictory(p);
+            } else {
+                setTimeout(() => openModal(p, p.pos, emoji), 500);
+            }
+        }
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('modal-overlay');
+        const timerText = document.getElementById('timer-text');
+        const timerProgress = document.getElementById('timer-progress');
+        const btnStartChallenge = document.getElementById('btn-start-challenge');
+        const btnCorrect = document.getElementById('btn-correct');
+        const btnIncorrect = document.getElementById('btn-incorrect');
+        const btnSkip = document.getElementById('btn-skip');
+        const btnOk = document.getElementById('btn-ok');
+
+        // Basta elements
+        const bastaSection = document.getElementById('basta-section');
+        const bastaLetter = document.getElementById('basta-letter');
+        const btnBastaStart = document.getElementById('btn-basta-start');
+        const btnBastaStop = document.getElementById('btn-basta-stop');
+
+        let currentChallengeTime = 15;
+        let bastaInterval = null;
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        async function handleSpecialMovement(steps) {
+            const p = players[currentPlayerIndex];
+            let count = Math.abs(steps);
+            const direction = steps > 0 ? 1 : -1;
+            
+            while (count > 0) {
+                if (direction === 1 && p.pos < 60) p.pos++;
+                else if (direction === -1 && p.pos > 1) p.pos--;
+                else break;
+                
+                playSound('move');
+                moveTokenToSquare(currentPlayerIndex, p.pos);
+                await new Promise(r => setTimeout(r, 400));
+                count--;
+            }
+            saveState();
+        }
+
+        function openModal(player, pos, emoji) {
+            const cat = CATEGORIES[emoji];
+            const section = SECTIONS[Math.floor((pos - 1) / 10)];
+            
+            document.getElementById('modal-player-name').innerText = player.name;
+            const mAvatar = document.getElementById('modal-player-avatar');
+            if (player.isImage) mAvatar.src = player.avatar;
+            else mAvatar.src = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${player.avatar}</text></svg>`;
+            
+            document.getElementById('modal-square-info').innerText = `Casilla ${pos} — ${section.name}`;
+            document.getElementById('modal-emoji').innerText = emoji;
+            document.getElementById('modal-category-name').innerText = cat.name;
+            document.getElementById('modal-desc').innerText = cat.desc;
+
+            modal.style.display = 'flex';
+
+            // Reset Basta section
+            bastaSection.style.display = 'none';
+            clearInterval(bastaInterval);
+            bastaLetter.innerText = 'A';
+            btnBastaStart.style.display = 'block';
+            btnBastaStop.style.display = 'none';
+
+            if (cat.special) {
+                document.getElementById('modal-timer-container').style.display = 'none';
+                document.getElementById('modal-start-container').style.display = 'none';
+                document.getElementById('modal-actions').style.display = 'none';
+                document.getElementById('modal-special-actions').style.display = 'flex';
+                
+                if (emoji === '🔴') {
+                    playSound('cancel');
+                    setTimeout(() => handleSpecialMovement(-2), 600);
+                }
+                if (emoji === '🟢') {
+                    playSound('referral');
+                    setTimeout(() => handleSpecialMovement(2), 600);
+                }
+            } else {
+                currentChallengeTime = cat.time || 15;
+                document.getElementById('modal-timer-container').style.display = 'block';
+                document.getElementById('modal-special-actions').style.display = 'none';
+
+                if (emoji === '🅱️') {
+                    bastaSection.style.display = 'block';
+                    document.getElementById('modal-start-container').style.display = 'none';
+                    document.getElementById('modal-actions').style.display = 'none';
+                } else {
+                    document.getElementById('modal-start-container').style.display = 'flex';
+                    document.getElementById('modal-actions').style.display = 'none';
+                }
+                
+                // Reset timer visual
+                timerText.innerText = currentChallengeTime;
+                timerProgress.style.strokeDashoffset = 0;
+                timerProgress.classList.remove('timer-urgent');
+                timerProgress.style.stroke = (currentChallengeTime === 5) ? 'var(--orange)' : 'var(--blue)';
+            }
+        }
+
+        // Basta Logic
+        btnBastaStart.addEventListener('click', () => {
+            btnBastaStart.style.display = 'none';
+            btnBastaStop.style.display = 'block';
+            playSound('roll');
+            
+            let idx = 0;
+            bastaInterval = setInterval(() => {
+                idx = (idx + 1) % alphabet.length;
+                bastaLetter.innerText = alphabet[idx];
+            }, 80);
+        });
+
+        btnBastaStop.addEventListener('click', () => {
+            clearInterval(bastaInterval);
+            btnBastaStop.style.display = 'none';
+            playSound('tick');
+            // Show start challenge button after letter is selected
+            document.getElementById('modal-start-container').style.display = 'flex';
+        });
+
+        btnStartChallenge.addEventListener('click', () => {
+            document.getElementById('modal-start-container').style.display = 'none';
+            document.getElementById('modal-actions').style.display = 'flex';
+            startTimer(currentChallengeTime);
+        });
+
+        function startTimer(seconds) {
+            let timeLeft = seconds;
+            const total = seconds;
+            timerText.innerText = timeLeft;
+            timerProgress.style.strokeDashoffset = 0;
+            timerProgress.classList.remove('timer-urgent');
+            timerProgress.style.stroke = (total === 5) ? 'var(--orange)' : 'var(--blue)';
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.innerText = timeLeft;
+                
+                const offset = 339.29 * (1 - timeLeft / total);
+                timerProgress.style.strokeDashoffset = offset;
+
+                if (timeLeft <= 3) {
+                    timerProgress.classList.add('timer-urgent');
+                    playSound('tick');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    playSound('buzzer');
+                    setTimeout(closeModal, 1000);
+                }
+            }, 1000);
+        }
+
+        function closeModal() {
+            clearInterval(timerInterval);
+            modal.style.display = 'none';
+            nextTurn();
+        }
+
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            isMoving = false;
+            rollBtn.disabled = false;
+            diceResult.innerText = '';
+            updateTurnDisplay();
+            saveState();
+        }
+
+        btnCorrect.addEventListener('click', () => { playSound('success'); closeModal(); });
+        btnIncorrect.addEventListener('click', () => { playSound('error'); closeModal(); });
+        btnSkip.addEventListener('click', closeModal);
+        
+        btnOk.addEventListener('click', () => {
+            modal.style.display = 'none';
+            nextTurn();
+        });
+
+        // --- VICTORY LOGIC ---
+        function showVictory(player) {
+            playSound('victory');
+            const screen = document.getElementById('victory-screen');
+            screen.style.display = 'flex';
+            document.getElementById('winner-text').innerText = `¡${player.name.toUpperCase()} GANA!`;
+            const wAvatar = document.getElementById('winner-avatar');
+            if (player.isImage) wAvatar.src = player.avatar;
+            else wAvatar.src = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${player.avatar}</text></svg>`;
+            
+            initVictoryParticles();
+        }
+
+        function initVictoryParticles() {
+            const canvas = document.getElementById('victory-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 5 + 2,
+                    speedY: Math.random() * 3 + 1,
+                    speedX: Math.random() * 2 - 1,
+                    color: `hsl(${Math.random() * 50 + 40}, 100%, 50%)`
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    if (p.y > canvas.height) p.y = -10;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            localStorage.removeItem('salesQuestState');
+            location.reload();
+        });
+
+        // Fixed Restart Logic
+        const fixedRestartBtn = document.getElementById('fixed-restart-btn');
+        const confirmModal = document.getElementById('confirm-modal');
+        const btnConfirmRestart = document.getElementById('btn-confirm-restart');
+        const btnCancelRestart = document.getElementById('btn-cancel-restart');
+
+        fixedRestartBtn.addEventListener('click', () => {
+            confirmModal.style.display = 'flex';
+        });
+
+        btnCancelRestart.addEventListener('click', () => {
+            confirmModal.style.display = 'none';
+        });
+
+        btnConfirmRestart.addEventListener('click', () => {
+            localStorage.removeItem('salesQuestState');
+            location.reload();
+        });
+
+        // --- PERSISTENCE ---
+        function saveState() {
+            const state = {
+                players,
+                currentPlayerIndex
+            };
+            localStorage.setItem('salesQuestState', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('salesQuestState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                players = state.players;
+                currentPlayerIndex = state.currentPlayerIndex;
+                initGame();
+                return true;
+            }
+            return false;
+        }
+
+        // Initial render
+        if (!loadState()) {
+            renderPlayerConfigs(1);
+        }
+
+        // Handle window resize for tokens
+        window.addEventListener('resize', () => {
+            if (players.length > 0) {
+                players.forEach(p => moveTokenToSquare(p.id, p.pos));
+            }
+        });
+    </script>
+</body>
+</html>
+

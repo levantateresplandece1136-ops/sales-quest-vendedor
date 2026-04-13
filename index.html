@@ -1183,8 +1183,9 @@
                 await new Promise(r => setTimeout(r, 100));
             }
             const finalRoll = Math.floor(Math.random() * 6) + 1;
-            diceResult.innerText = finalRoll;
-            await movePlayer(currentPlayerIndex, finalRoll);
+diceResult.innerText = finalRoll;
+lastRoll = finalRoll;
+await movePlayer(currentPlayerIndex, finalRoll);
         });
 
         async function movePlayer(pIdx, steps) {
@@ -1215,7 +1216,7 @@
         const btnBastaStart     = document.getElementById('btn-basta-start');
         const btnBastaStop      = document.getElementById('btn-basta-stop');
 
-        let currentChallengeTime = 15;
+        let lastRoll = 0;let currentChallengeTime = 15;
         let bastaInterval = null;
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -1338,9 +1339,23 @@
             saveState();
         }
 
-        btnCorrect.addEventListener('click',   () => { playSound('success'); closeModal(); });
-        btnIncorrect.addEventListener('click', () => { playSound('error');   closeModal(); });
-        btnSkip.addEventListener('click', closeModal);
+       btnCorrect.addEventListener('click', () => { 
+    playSound('success'); 
+    lastRoll = 0;
+    closeModal(); 
+});
+btnIncorrect.addEventListener('click', async () => { 
+    playSound('error');
+    modal.style.display = 'none';
+    clearInterval(timerInterval);
+    await handleSpecialMovement(-lastRoll);
+    nextTurn();
+});
+btnSkip.addEventListener('click', () => {
+    modal.style.display = 'none';
+    clearInterval(timerInterval);
+    nextTurn();
+});
         btnOk.addEventListener('click', () => { modal.style.display = 'none'; nextTurn(); });
 
         // ===================== VICTORY =====================
